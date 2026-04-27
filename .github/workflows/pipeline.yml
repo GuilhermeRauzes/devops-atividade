@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: CI/CD Pipeline com Testes e Alerta
 
 on:
   push:
@@ -7,17 +7,29 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.9'
+        
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-    - name: Run Dummy Test for CI
-      run: echo "Testes de Integracao passaram! Tudo pronto."
+        pip install pytest  # Instalando o framework de testes
+        
+    - name: Run Unit Tests
+      run: |
+        pytest test_app.py  # Rodando os 5 testes unitários!
+
+    - name: Send Notification Alert
+      if: always()
+      run: |
+        echo "🚨 ALERTA: Pipeline executado!"
+        echo "Status dos testes: ${{ job.status }}"
+        echo "Enviando notificação para a equipe de DevOps..."
